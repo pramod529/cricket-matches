@@ -5,13 +5,15 @@ import React, { Component } from 'react';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column'
 import {Button} from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
 
 export default class RecommenedMatch extends Component {
 
     constructor() {
         super();
         this.state = {
-            cars: []
+            cars: [],
+            globalFilter: null
         };
     }
 
@@ -33,16 +35,25 @@ export default class RecommenedMatch extends Component {
 
     render() {
         const paginatorLeft = <Button icon="pi pi-refresh"/>;
+        const header = (
+            <div className="table-header">
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText type="search" onInput={(e) => this.setState({ globalFilter: e.target.value })} placeholder="Search..." />
+                </span>
+            </div>
+        );
         return (
             <div className="auth-inner-favourite datatable-paginator-demo" >
                 <h3>Recommened Matches</h3>
                 <DataTable value={this.state.cars} responsive={true} paginator={true} paginatorLeft={paginatorLeft}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Pagniation For Recommened Matches" rows={5} rowsPerPageOptions={[5,10,20]}>
-                    <Column field="matchId" header="Match Id" />
-                    <Column field="matchTitle" header="Match Title" />
-                    <Column field="matchTime" header="Match Time" />
-                    <Column field="location" header="Location" />
+                    currentPageReportTemplate="Pagniation For Recommened Matches" globalFilter={this.state.globalFilter}
+                    header={header} rows={5} rowsPerPageOptions={[5,10,20]}>
+                    <Column field="matchId" header="Match Id" filter filterPlaceholder="Search By Match Id" sortable/>
+                    <Column field="matchTitle" header="Match Title" filter filterPlaceholder="Search By Match Title" sortable/>
+                    <Column field="matchTime" header="Match Time" filter filterPlaceholder="Search By Match Time" sortable/>
+                    <Column field="location" header="Location" filter filterPlaceholder="Search By Location" sortable/>
                 </DataTable>
             </div>
         );
