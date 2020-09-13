@@ -7,6 +7,7 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.css';
 import { Button } from 'primereact/button';
+import { fetchMatches } from '../../services/fetchCricketMatches.service';
 
 BigCalendar.momentLocalizer(moment);
 let views= BigCalendar.Views
@@ -15,7 +16,7 @@ console.log(Object.keys(views));
 let allViews = Object
   .keys(BigCalendar.Views)
   .map((k => BigCalendar.Views[k]));
-const events = [
+let events = [
     {
       'title': 'IND VS ENG T20 Match',
       'start': new Date("2020-08-31 12:30"),
@@ -76,6 +77,43 @@ export default class Dashboard extends Component {
             ],
           })
       }
+      componentWillMount() {
+        fetchMatches()
+        .then(res => {
+            console.log('fetchMatches',res);
+            res.data.forEach((e,i) => {
+                let event = {}
+                let uniqueId;
+                var now = new Date();
+                uniqueId = now.getFullYear().toString(); 
+                uniqueId += ((now.getMonth()+1) < 10 ? '0' : '') + now.getMonth().toString();
+                uniqueId += ((now.getDate() < 10) ? '0' : '') + now.getDate().toString();
+                uniqueId += ((now.getHours() < 10) ? '0' : '') + now.getHours().toString();
+                uniqueId += ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes().toString();
+                uniqueId += ((now.getSeconds() < 10) ? '0' : '') + now.getSeconds().toString();
+                //event.id = uniqueId+i;
+                console.log('id',uniqueId+i);
+                event.title = e.name+i;
+                console.log('title',e.name);
+                let startMatchTime = new Date(e.date);
+                event.start = new Date(`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`);
+                //event.startTime = `${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`;
+                console.log('startTime',`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`);
+                console.log('start',new Date(`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`));
+                let endMatchTime = new Date(e.date);
+                event.end = new Date(`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`);
+                //event.endTime = `${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`;
+                console.log('endTime',`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`);
+                console.log('end',new Date(`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`));
+                events.push(event);
+            });
+            this.setState({events:events});
+        })
+        .catch(error => {
+            console.log('Error in fetching matches :: ', error);
+            return;
+        });
+    }
     onSelectEvent (event) {
         console.log('events',event.title)
       this.setState({visible:true,selectedEvent:event.title});
@@ -93,12 +131,12 @@ export default class Dashboard extends Component {
             </button>
         )
         console.log(BigCalendar.Views);
-        console.log(allViews);
+        console.log(this.state.events);
         return (
             <div className="auth-inner-dashboard">
                 <h3>Cricket Match Calender</h3>
                 <BigCalendar
-                events={events}
+                events={this.state.events}
                 views ={allViews}
                 defaultView={BigCalendar.Views.MONTH}
                 defaultDate={new Date()}

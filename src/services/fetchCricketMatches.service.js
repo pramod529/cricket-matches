@@ -9,7 +9,7 @@ const handleError = response => {
     return Promise.reject(new Error('Generic Error..'));
 }
 
-const apiKey='92efee334aa40730c80e395b57d1dd04';
+const apiKey='Gt7wO2QnpobGQGBvTRXxmVJPViE2';
 
 async function authenticateUser(userName, password) {
     const credentials = { userId: userName, userPassword:password };
@@ -56,5 +56,17 @@ async function registerUser(userName, password,firstName,lastName) {
         return Promise.reject(error);
     }
 }
-
-export { registerUser,authenticateUser, handleError, apiKey };
+async function fetchMatches() {
+    try {
+        const response = await fetch(`https://cricapi.com/api/matchCalendar?apikey=Gt7wO2QnpobGQGBvTRXxmVJPViE2`,
+        );
+        if (!response.ok) {
+            return handleError(response);
+        }
+        const json = await response.json();
+        return Promise.resolve(json);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+export { registerUser,authenticateUser, handleError, fetchMatches, apiKey };
