@@ -77,42 +77,51 @@ export default class Dashboard extends Component {
             ],
           })
       }
-      componentWillMount() {
-        fetchMatches()
-        .then(res => {
-            console.log('fetchMatches',res);
-            res.data.forEach((e,i) => {
-                let event = {}
-                let uniqueId;
-                var now = new Date();
-                uniqueId = now.getFullYear().toString(); 
-                uniqueId += ((now.getMonth()+1) < 10 ? '0' : '') + now.getMonth().toString();
-                uniqueId += ((now.getDate() < 10) ? '0' : '') + now.getDate().toString();
-                uniqueId += ((now.getHours() < 10) ? '0' : '') + now.getHours().toString();
-                uniqueId += ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes().toString();
-                uniqueId += ((now.getSeconds() < 10) ? '0' : '') + now.getSeconds().toString();
-                //event.id = uniqueId+i;
-                console.log('id',uniqueId+i);
-                event.title = e.name+i;
-                console.log('title',e.name);
-                let startMatchTime = new Date(e.date);
-                event.start = new Date(`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`);
-                //event.startTime = `${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`;
-                console.log('startTime',`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`);
-                console.log('start',new Date(`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`));
-                let endMatchTime = new Date(e.date);
-                event.end = new Date(`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`);
-                //event.endTime = `${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`;
-                console.log('endTime',`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`);
-                console.log('end',new Date(`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`));
-                events.push(event);
-            });
-            this.setState({events:events});
+      mergeArrayObjects = (arr1,arr2) => {
+        return arr1.map((item,i) => {
+           if(item.id === arr2[i].id){
+              return Object.assign({},item,arr2[i])
+           }
         })
-        .catch(error => {
-            console.log('Error in fetching matches :: ', error);
-            return;
-        });
+      }
+      componentWillMount() {
+        let evnts = []
+        Promise.all([fetchMatches()
+            .then(res => {
+                console.log('fetchMatches',res);
+                res.data.forEach((e,i) => {
+                    let event = {}
+                    let uniqueId;
+                    var now = new Date();
+                    uniqueId = now.getFullYear().toString(); 
+                    uniqueId += ((now.getMonth()+1) < 10 ? '0' : '') + now.getMonth().toString();
+                    uniqueId += ((now.getDate() < 10) ? '0' : '') + now.getDate().toString();
+                    uniqueId += ((now.getHours() < 10) ? '0' : '') + now.getHours().toString();
+                    uniqueId += ((now.getMinutes() < 10) ? '0' : '') + now.getMinutes().toString();
+                    uniqueId += ((now.getSeconds() < 10) ? '0' : '') + now.getSeconds().toString();
+                    //event.id = uniqueId+i;
+                    console.log('id',uniqueId+i);
+                    event.title = e.name+i;
+                    console.log('title',e.name);
+                    let startMatchTime = new Date(e.date);
+                    event.start = new Date(`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`);
+                    //event.startTime = `${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`;
+                    console.log('startTime',`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`);
+                    console.log('start',new Date(`${startMatchTime.getFullYear().toString() + '-' + ((startMatchTime.getMonth()+1)< 10 ? '0' : '') + (startMatchTime.getMonth()+1).toString() + '-' + ((startMatchTime.getDate() < 10 ? '0' : '') + startMatchTime.getDate().toString()) + ' 16:30'}`));
+                    let endMatchTime = new Date(e.date);
+                    event.end = new Date(`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`);
+                    //event.endTime = `${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`;
+                    console.log('endTime',`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`);
+                    console.log('end',new Date(`${endMatchTime.getFullYear().toString() + '-' + ((endMatchTime.getMonth()+1)< 10 ? '0' : '') + (endMatchTime.getMonth()+1).toString() + '-' + ((endMatchTime.getDate() < 10 ? '0' : '') + endMatchTime.getDate().toString()) + ' 23:30'}`));
+                    evnts.push(event);
+                });
+            })
+            .catch(error => {
+                console.log('Error in fetching matches :: ', error);
+            })]).then(()=>{
+                let totalEvents = [...events, ...evnts];             
+                this.setState({events:totalEvents});
+            });
     }
     onSelectEvent (event) {
         console.log('events',event.title)
