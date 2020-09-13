@@ -86,7 +86,7 @@ export default class Dashboard extends Component {
       }
       componentWillMount() {
         let evnts = []
-        Promise.all([fetchMatches()
+        Promise.all([events,fetchMatches()
             .then(res => {
                 console.log('fetchMatches',res);
                 res.data.forEach((e,i) => {
