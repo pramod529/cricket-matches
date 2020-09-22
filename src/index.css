@@ -127,3 +127,6 @@ body, html, .App, #root, .auth-wrapper {
 .rbc-event {
   max-width: 120px;
 }
+.react-datetime-picker__calendar {
+  z-index: 1035 !important;
+}

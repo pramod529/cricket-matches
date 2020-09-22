@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { authenticateUser } from '../../services/fetchCricketMatches.service';
+import DateTimePicker from 'react-datetime-picker';
 
 export default class Login extends Component {
     constructor(){
@@ -7,9 +8,11 @@ export default class Login extends Component {
         this.state = {
             matchname : '',
             matchtime:'',
-            formErrors:{matchname:'',matchtime : '',success: ''},
+            matchEndTime:'',
+            formErrors:{matchname:'',matchtime : '',success: '', matchEndTime:''},
             matchnameValid:false,
             matchtimeValid:false,
+            matchEndTimeValid:false,
             formValid:false
         }
         this.handleUserInput = this.handleUserInput.bind(this);
@@ -19,14 +22,25 @@ export default class Login extends Component {
         
     }
     handleUserInput = (name,value) => {
+        let formtDt = "";
+        if (name !== 'matchname') {
+            let dt = new Date(value);
+            formtDt = [dt.getFullYear(), dt.getMonth()+1,dt.getDate()].join('-')+' '+  [dt.getHours(), dt.getMinutes()].join(':');
+        }
         this.setState({[name]:value},() => {
-            this.validateField(name,value)
+            if (name !== 'matchname') {
+                this.validateField(name,value)
+            } else {
+                this.validateField(name,formtDt.toString())
+
+            }
         })
     }
     validateField(fieldName,value){
         let fieldValidationErrors = this.state.formErrors;
         let matchnameValid = this.state.matchnameValid;
         let matchtimeValid = this.state.matchtimeValid;
+        let matchendtimeValid = this.state.matchEndTimeValid;
         fieldValidationErrors.success = '';
         switch(fieldName){
             case 'matchname':
@@ -45,15 +59,23 @@ export default class Login extends Component {
                 fieldValidationErrors.matchtime = '';
             }                
             break;
+            case 'matchEndTime':
+            if (value && value.length > 0) {
+                matchendtimeValid = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]/.test(value);
+                fieldValidationErrors.matchEndTime = matchendtimeValid ? '' : 'false';
+            } else {
+                fieldValidationErrors.matchEndTime = '';
+            }                
+            break;
             default:
             break;
         }
         this.setState({ formErrors:fieldValidationErrors,
                         matchnameValid:matchnameValid,
-                    matchtimeValid:matchtimeValid }, this.validateForm);
+                    matchtimeValid:matchtimeValid, matchEndTimeValid: matchendtimeValid}, this.validateForm);
     }
     validateForm(){
-        this.setState({ formValid: this.state.matchnameValid && this.state.matchtimeValid });
+        this.setState({ formValid: this.state.matchnameValid && this.state.matchtimeValid && this.state.matchEndTimeValid});
     }
     handleSubmit(e) {
         e.preventDefault();
@@ -86,7 +108,10 @@ export default class Login extends Component {
                         Match Name Should Contain 6-10 Charaters of Alpha Numerics
                     </div>)}
                     {(this.state.formErrors.matchtime === 'false' && <div className="alert alert-danger" role="alert">
-                        Date And Time Should Be (YYYY-MM-DD HH:SS) 24 Hours Format
+                        State Date And Time Should Be (YYYY-MM-DD HH:SS) 24 Hours Format
+                    </div>)}
+                    {(this.state.formErrors.matchEndTime === 'false' && <div className="alert alert-danger" role="alert">
+                        End Date And Time Should Be (YYYY-MM-DD HH:SS) 24 Hours Format
                     </div>)}
                     {(this.state.formValid && this.state.formErrors.success === 'false' && <div className="alert alert-danger" role="alert">
                     Authentication Failed . Please Contact Admin
@@ -97,8 +122,13 @@ export default class Login extends Component {
                     </div>
 
                     <div className="form-group">
-                        <label>Match Date And Time (YYYY-MM-DD HH:SS) 24 Hours</label>
-                        <input type="text" className="form-control" value={this.state.matchtime} onChange={(input) =>this.handleUserInput('matchtime',input.target.value)} placeholder="Enter Format Of YYYY-MM-DD HH:SS" />
+                        <label>Match Start Time</label>
+                        <DateTimePicker onChange={(input) =>this.handleUserInput('matchtime',input)} value={this.state.matchtime}/>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Match End Time</label>
+                        <DateTimePicker onChange={(input) =>this.handleUserInput('matchEndTime',input)} value={this.state.matchEndTime}/>
                     </div>
                     <button type="submit" className="btn btn-primary btn-block" disabled={!(this.state.matchnameValid && this.state.matchtimeValid)}>Submit</button>
                 </form>
