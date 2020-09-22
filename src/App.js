@@ -9,6 +9,9 @@ import Dashboard from "./components/dashboard/dashboard.component";
 import FavouriteList from "./components/dashboard/favouriteList.component";
 import RecommenedMatch from "./components/dashboard/recommenedMatch.component";
 import Match from "./components/dashboard/match.component";
+import 'primereact/resources/themes/nova-colored/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 export default class App extends Component {
   constructor(){
