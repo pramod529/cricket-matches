@@ -1,6 +1,7 @@
 {
-  "name": "primereact-quickstart",
+  "name": "cricket-matches",
   "version": "0.1.0",
+   "homepage": "https://pramod529.github.io/cricket-matches",
   "private": true,
   "dependencies": {
     "bootstrap": "^4.5.2",
@@ -19,6 +20,8 @@
     "react-scripts": "2.1.3"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
